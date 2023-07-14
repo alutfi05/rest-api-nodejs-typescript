@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import type { NextFunction, Request, Response } from 'express'
 import { logger } from '../utils/logger'
-import { createProductValidation } from '../validation/product.validation'
+import { createProductValidation } from '../validations/product.validation'
 
 export const ProductRouter: Router = Router()
 
