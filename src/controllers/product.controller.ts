@@ -15,20 +15,48 @@ export const createProduct = (req: Request, res: Response) => {
     })
   }
 
-  logger.info('Success add new product')
-  return res.status(200).send({
+  logger.info('Success create new product')
+  return res.status(201).send({
     status: true,
-    statusCode: 200,
-    message: 'Add product success',
+    statusCode: 201,
+    message: 'Create product success',
     data: value
   })
 }
 
 export const getProduct = (req: Request, res: Response) => {
-  logger.info('Success get product data')
+  const products = [
+    { name: 'Sepatu', price: 500000 },
+    { name: 'Hoodie', price: 399000 }
+  ]
+  const {
+    params: { name }
+  } = req
+
+  if (name) {
+    const filterProduct = products.filter((product) => product.name === name)
+
+    if (filterProduct.length === 0) {
+      logger.info('Data not found')
+      return res.status(404).send({
+        status: false,
+        statusCode: 404,
+        data: {}
+      })
+    }
+
+    logger.info('Success get product data')
+    return res.status(200).send({
+      status: true,
+      statusCode: 200,
+      data: filterProduct[0]
+    })
+  }
+
+  logger.info('Success get all products data')
   return res.status(200).send({
     status: true,
     statusCode: 200,
-    data: [{ name: 'Sepatu Sport', price: 500000 }]
+    data: products
   })
 }
