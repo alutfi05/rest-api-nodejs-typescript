@@ -30,3 +30,12 @@ export const getProductById = async (id: string) => {
     logger.error(error)
   }
 }
+
+export const updateProductById = async (id: string, payload: ProductType) => {
+  try {
+    return await productModel.findOneAndUpdate({ product_id: id }, { $set: payload })
+  } catch (error) {
+    logger.info('Cannot update data by id to DB')
+    logger.error(error)
+  }
+}

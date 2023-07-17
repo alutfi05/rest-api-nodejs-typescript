@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
-import { createProductValidation } from '../validations/product.validation'
+import { createProductValidation, updateProductValidation } from '../validations/product.validation'
 import { logger } from '../utils/logger'
-import { addProductToDB, getProductById, getProductFromDB } from '../services/product.service'
+import { addProductToDB, getProductById, getProductFromDB, updateProductById } from '../services/product.service'
 import { v4 as uuidv4 } from 'uuid'
 
 export const createProduct = async (req: Request, res: Response) => {
@@ -56,7 +56,7 @@ export const getProduct = async (req: Request, res: Response) => {
       return res.status(404).send({
         status: false,
         statusCode: 404,
-        message: 'Data Not Found',
+        message: `Data with id: ${id} not found`,
         data: {}
       })
     }
@@ -68,6 +68,51 @@ export const getProduct = async (req: Request, res: Response) => {
       status: true,
       statusCode: 200,
       data: products
+    })
+  }
+}
+
+export const updateProduct = async (req: Request, res: Response) => {
+  const {
+    params: { id }
+  } = req
+
+  const { error, value } = updateProductValidation(req.body)
+
+  if (error) {
+    logger.error(`ERR: product - update =  ${error.details[0].message}`)
+    return res.status(422).send({
+      status: false,
+      statusCode: 422,
+      message: error.details[0].message,
+      data: {}
+    })
+  }
+
+  try {
+    if (id === value.product_id) {
+      await updateProductById(id, value)
+
+      logger.info('Success update product')
+      return res.status(201).send({
+        status: true,
+        statusCode: 201,
+        message: 'Update product success'
+      })
+    } else {
+      return res.status(404).send({
+        status: false,
+        statusCode: 404,
+        message: `Data with id: ${id} not found`,
+        data: {}
+      })
+    }
+  } catch (error) {
+    logger.error(`ERR: product - update =  ${error}`)
+    return res.status(422).send({
+      status: false,
+      statusCode: 422,
+      message: error
     })
   }
 }
