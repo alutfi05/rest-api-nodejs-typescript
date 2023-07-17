@@ -23,7 +23,11 @@ export const registerUser = async (req: Request, res: Response) => {
     value.password = `${hashing(value.password)}`
     await createUser(value)
 
-    return res.status(201).json({ status: true, statusCode: 201, message: 'Success register user' })
+    return res.status(201).json({
+      status: true,
+      statusCode: 201,
+      message: 'Success register user'
+    })
   } catch (error) {
     logger.error(`ERR: auth - register =  ${error}`)
     return res.status(422).json({
