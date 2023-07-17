@@ -6,7 +6,7 @@ export const addProductToDB = async (payload: ProductType) => {
   try {
     return await productModel.create(payload)
   } catch (error) {
-    logger.info('Cannot add data yo DB')
+    logger.info('Cannot add data to DB')
     logger.error(error)
   }
 }
