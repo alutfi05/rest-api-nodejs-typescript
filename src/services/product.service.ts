@@ -33,9 +33,20 @@ export const getProductById = async (id: string) => {
 
 export const updateProductById = async (id: string, payload: ProductType) => {
   try {
-    return await productModel.findOneAndUpdate({ product_id: id }, { $set: payload })
+    const data = await productModel.findOneAndUpdate({ product_id: id }, { $set: payload })
+    return data
   } catch (error) {
     logger.info('Cannot update data by id to DB')
+    logger.error(error)
+  }
+}
+
+export const deleteProductById = async (id: string) => {
+  try {
+    const data = await productModel.findOneAndDelete({ product_id: id })
+    return data
+  } catch (error) {
+    logger.info('Cannot delete data by id to DB')
     logger.error(error)
   }
 }
