@@ -11,8 +11,5 @@
       "src": "/{.*}",
       "dest": "src/index.ts"
     }
-  ],
-  "installCommand": "npm install --force",
-  "buildCommand": "npm run build --force"
-
+  ]
 }
