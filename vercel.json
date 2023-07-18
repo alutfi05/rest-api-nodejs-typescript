@@ -13,6 +13,6 @@
     }
   ],
   "installCommand": "npm install --force",
-  "buildCommand": "vercel build --force"
+  "buildCommand": "npm run build --force"
 
 }
