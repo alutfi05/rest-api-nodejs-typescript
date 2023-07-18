@@ -26,9 +26,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next()
 })
 
-app.use(deserializeToken)
-
 routes(app)
+app.use(deserializeToken)
 
 app.listen(port, () => {
   logger.info(`Server is listening on port ${port}`)
