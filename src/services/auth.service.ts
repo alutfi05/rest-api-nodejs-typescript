@@ -10,3 +10,12 @@ export const createUser = async (payload: UserType) => {
     logger.error(error)
   }
 }
+
+export const findUserByEmail = async (email: string) => {
+  try {
+    return await userModel.findOne({ email })
+  } catch (error) {
+    logger.info('Cannot find user from DB')
+    logger.error(error)
+  }
+}
