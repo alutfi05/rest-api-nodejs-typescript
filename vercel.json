@@ -11,5 +11,8 @@
       "src": "/{.*}",
       "dest": "src/index.ts"
     }
-  ]
+  ],
+  "installCommand": "npm install --force",
+  "buildCommand": "vercel build --force"
+
 }
