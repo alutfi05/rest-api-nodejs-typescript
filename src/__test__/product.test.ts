@@ -141,7 +141,7 @@ describe('product', () => {
           .set('Authorization', `Bearer ${body.data.accessToken}`)
         expect(statusCode).toBe(200)
       })
-      it('should return 422, product id does not exist in DB', async () => {
+      it('should return 404, product id does not exist in DB', async () => {
         const { body } = await supertest(app).post('/auth/login').send(userAdmin)
         const { statusCode } = await supertest(app)
           .delete('/product/product_123')
