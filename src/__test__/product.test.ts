@@ -10,27 +10,22 @@ import { hashing } from '../utils/hashing'
 
 const app: Application = createServer()
 
-const productId1 = uuidv4()
-const productId2 = uuidv4()
-const userIdAdmin = uuidv4()
-const userIdReguler = uuidv4()
-
 const productPayload = {
-  product_id: productId1,
+  product_id: uuidv4(),
   name: 'Hoodie Hitam',
   price: 499000,
   size: 'L'
 }
 
 const productPayloadCreate = {
-  product_id: productId2,
+  product_id: uuidv4(),
   name: 'Hoodie Putih',
   price: 499000,
   size: 'L'
 }
 
 const userAdminCreated = {
-  user_id: userIdAdmin,
+  user_id: uuidv4(),
   email: 'aluthfi123@gmail.com',
   name: 'Ahmad Lutfi Rizki Patria',
   password: `${hashing('test123')}`,
@@ -38,7 +33,7 @@ const userAdminCreated = {
 }
 
 const userCreated = {
-  user_id: userIdReguler,
+  user_id: uuidv4(),
   email: 'aluthfi0522@gmail.com',
   name: 'Ahmad Lutfi Rizki Patria',
   password: `${hashing('test123')}`,
@@ -87,7 +82,7 @@ describe('product', () => {
     })
     describe('given the product does exist', () => {
       it('should return 200 and detail product data', async () => {
-        const { statusCode, body } = await supertest(app).get(`/product/${productId1}`)
+        const { statusCode, body } = await supertest(app).get(`/product/${productPayload.product_id}`)
         expect(statusCode).toBe(200)
         expect(body.data.name).toBe('Hoodie Hitam')
       })
@@ -126,6 +121,40 @@ describe('product', () => {
           .post('/product')
           .set('Authorization', `Bearer ${body.data.accessToken}`)
           .send(productPayloadCreate)
+        expect(statusCode).toBe(403)
+      })
+    })
+  })
+
+  describe('delete product', () => {
+    describe('if user is not login', () => {
+      it('should return 403, request forbidden', async () => {
+        const { statusCode } = await supertest(app).delete(`/product/${productPayload.product_id}`)
+        expect(statusCode).toBe(403)
+      })
+    })
+    describe('if user is login as admin', () => {
+      it('should return 200, success delete product', async () => {
+        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { statusCode } = await supertest(app)
+          .delete(`/product/${productPayload.product_id}`)
+          .set('Authorization', `Bearer ${body.data.accessToken}`)
+        expect(statusCode).toBe(200)
+      })
+      it('should return 422, product id does not exist in DB', async () => {
+        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { statusCode } = await supertest(app)
+          .delete('/product/product_123')
+          .set('Authorization', `Bearer ${body.data.accessToken}`)
+        expect(statusCode).toBe(404)
+      })
+    })
+    describe('if user is login as reguler', () => {
+      it('should return 403, request forbidden', async () => {
+        const { body } = await supertest(app).post('/auth/login').send(userReguler)
+        const { statusCode } = await supertest(app)
+          .delete(`/product/${productPayload.product_id}`)
+          .set('Authorization', `Bearer ${body.data.accessToken}`)
         expect(statusCode).toBe(403)
       })
     })
