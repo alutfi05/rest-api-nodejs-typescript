@@ -24,6 +24,12 @@ const productPayloadCreate = {
   size: 'L'
 }
 
+const productPayloadUpdate = {
+  name: 'Hoodie Hitam Update',
+  price: 399000,
+  size: 'XXL'
+}
+
 const userAdminCreated = {
   user_id: uuidv4(),
   email: 'aluthfi123@gmail.com',
@@ -121,6 +127,47 @@ describe('product', () => {
           .post('/product')
           .set('Authorization', `Bearer ${body.data.accessToken}`)
           .send(productPayloadCreate)
+        expect(statusCode).toBe(403)
+      })
+    })
+  })
+
+  describe('update product', () => {
+    describe('if user is not login', () => {
+      it('should return 403, request forbidden', async () => {
+        const { statusCode } = await supertest(app).put(`/product/${productPayload.product_id}`)
+        expect(statusCode).toBe(403)
+      })
+    })
+    describe('if user is login as admin', () => {
+      it('should return 200, success update product', async () => {
+        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { statusCode } = await supertest(app)
+          .put(`/product/${productPayload.product_id}`)
+          .set('Authorization', `Bearer ${body.data.accessToken}`)
+          .send(productPayloadUpdate)
+        expect(statusCode).toBe(200)
+
+        const updatedData = await supertest(app).get(`/product/${productPayload.product_id}`)
+        expect(updatedData.body.data.size).toBe('XXL')
+        expect(updatedData.body.data.price).toBe(399000)
+      })
+      it('should return 404, product id does not exist in DB', async () => {
+        const { body } = await supertest(app).post('/auth/login').send(userAdmin)
+        const { statusCode } = await supertest(app)
+          .put('/product/product_123')
+          .set('Authorization', `Bearer ${body.data.accessToken}`)
+          .send(productPayloadUpdate)
+        expect(statusCode).toBe(404)
+      })
+    })
+    describe('if user is login as reguler', () => {
+      it('should return 403, request forbidden', async () => {
+        const { body } = await supertest(app).post('/auth/login').send(userReguler)
+        const { statusCode } = await supertest(app)
+          .put(`/product/${productPayload.product_id}`)
+          .set('Authorization', `Bearer ${body.data.accessToken}`)
+          .send(productPayloadUpdate)
         expect(statusCode).toBe(403)
       })
     })
